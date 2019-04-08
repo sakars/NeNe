@@ -1,6 +1,6 @@
-function Weight(in,out){
+function Weight(inp,out){
   this.weights=[];
-  for(var i=0;i<in;i++){
+  for(var i=0;i<inp;i++){
     this.weights.push([]);
     for(var i2=0;i2<out;i2++){
       this.weights[i].push(this.random(-2,2,2));

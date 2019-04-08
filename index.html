@@ -1,0 +1,27 @@
+<HTML>
+<head>
+<title> k </title>
+</head>
+
+<body>
+<canvas id=myCanvas width=300 height=300 style="background-color: pink;"> </canvas>
+<script src="Net.js"></script>
+<script src="Weights.js" charset="utf-8"></script>
+<script src="Block.js" charset="utf-8"></script>
+<script src="Neiron.js" charset="utf-8"></script>
+<script>
+  var ctx = myCanvas.getContext("2d");
+  var net=new Net(3);
+  net.addBlock(5,0,net.noSquish,net.noSquish,"input",true);
+  net.addBlock(10,1,net.sigmoid,net.Isigmoid,"middle");
+  net.addBlock(2,2,net.sigmoid,net.Isigmoid,"output");
+  net.connect("input","middle");
+  net.connect("middle","output");
+  net.setBlock("input",[1,2,3,4,5]);
+  net.forwardProp();
+  console.log(net.getBlockOutput("output"));
+  console.log(net);
+</script>
+
+</body>
+</html>
