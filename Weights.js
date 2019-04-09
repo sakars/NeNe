@@ -21,3 +21,20 @@ Weight.prototype.calc=function(input){
   }
   return out;
 };
+Weight.prototype.dcalc=function(input){
+  var out=[];
+  for(var i=0;i<this.weights.length;i++){
+    out.push(0);
+    for(var i2=0;i2<this.weights[0].length;i2++){
+      out[i]+=input[i2]*this.weights[i][i2];
+    }
+  }
+  return out;
+};
+Weight.prototype.updatew=function(nder,pro,cof){
+  for(var i=0;i<pro.length;i++){
+    for(var i2=0;i2<nder.length;i2++){
+      this.weights[i][i2]-=cof*pro[i]*nder[i2];
+    }
+  }
+}

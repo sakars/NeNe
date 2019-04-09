@@ -8,7 +8,11 @@ function Block(layer,count,squish,unsquish,name,input){
   this.squish=squish;
   this.unsquish=unsquish;
   this.Cons=[];
+  this.BCons=[];
   this.input=input;
+}
+Block.prototype.addBCon=function(Id){
+  this.BCons.push(Id);
 }
 Block.prototype.addConnection=function(Id) {
   this.Cons.push(Id);
@@ -18,6 +22,7 @@ Block.prototype.run=function(network) {
     var sq=this.squish;
     this.nodes.forEach(function(a){
       a.calc(sq);
+      a.weightsum=0;
     });
   }
   var inp=[];
@@ -31,6 +36,17 @@ Block.prototype.run=function(network) {
     }
   }
 }
-Block.prototype.propagateBack=function(){
-  
+Block.prototype.propagateBack=function(network){
+  var inp=[];
+  for(var i=0;i<this.nodes.length;i++){
+    var neur=this.nodes[i];
+    neur.error=this.unsquish(neur.error);
+    inp.push(neur.error);
+  }
+  for(var i=0;i<this.BCons.length;i++){
+    var unscrambledw=network.connections[this.BCons[i]+"-"+this.id].dcalc(inp);
+    network.setBlockD(this.BCons[i],unscrambledw);
+    network.connections[this.BCons[i]+"-"+this.id].updatew(inp,network.getBlockOutput(this.BCons[i]),network.learningC);
+  }
+  network.resetBlockD(this.id);
 }
