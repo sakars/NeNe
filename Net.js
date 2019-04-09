@@ -39,6 +39,20 @@ Net.prototype.forwardProp=function(){
     }
   }
 }
+Net.prototype.backProp=function(rightO){//[[key,[values]],[key,[values]]]
+  for(var i=0;i<rightO.length;i++){
+    var block=this.blocks[rightO[i][0]];
+    for(var i2=0;i2<rightO[i][1].length){
+      block.nodes[i2].error=block.nodes[i2].value-rightO[i][1][i2];
+    }
+  }
+  for(var i=this.layers-1;i>=0;i--){
+    for(var i2=0;i2<this.layerSorted[i].length;i2++){
+      var block=this.blocks[this.layerSorted[i][i2]];
+      block.propagateBack();
+    }
+  }
+}
 Net.prototype.getBlockOutput=function(Id){
   var block=this.blocks[Id];
   var ou=[];

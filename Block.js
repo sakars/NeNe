@@ -1,7 +1,7 @@
 function Block(layer,count,squish,unsquish,name,input){
   this.nodes=[];
   for(var i=0;i<count;i++){
-    this.nodes.push(new Neiron());
+    this.nodes.push(new Neuron());
   }
   this.count=count;
   this.id=name;
@@ -30,4 +30,7 @@ Block.prototype.run=function(network) {
       network.blocks[this.Cons[i]].nodes[i2].weightsum+=k[i2];
     }
   }
+}
+Block.prototype.propagateBack=function(){
+  
 }
