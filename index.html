@@ -14,7 +14,7 @@
   var net=new Net(3);
   var its=0;
   net.addBlock(2,0,net.noSquish,net.noSquish,"input",true);
-  net.addBlock(15,1,net.sigmoid,net.Isigmoid,"middle");
+  net.addBlock(2,1,net.sigmoid,net.Isigmoid,"middle");
   net.addBlock(2,2,net.sigmoid,net.Isigmoid,"output");
   net.connect("input","middle");
   net.connect("middle","output");
@@ -23,17 +23,17 @@
       case 0:
         net.setBlock("input",[1,1]);
         net.forwardProp();
-        net.backProp([["output",[1,0]]]);
+        net.backProp([["output",[0,1]]]);
       break;
       case 1:
         net.setBlock("input",[1,-1]);
         net.forwardProp();
-        net.backProp([["output",[0,1]]]);
+        net.backProp([["output",[1,0]]]);
       break;
       case 2:
         net.setBlock("input",[-1,1]);
         net.forwardProp();
-        net.backProp([["output",[0,1]]]);
+        net.backProp([["output",[1,0]]]);
       break;
       case 3:
         net.setBlock("input",[-1,-1]);
