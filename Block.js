@@ -40,7 +40,8 @@ Block.prototype.propagateBack=function(network){
   var inp=[];
   for(var i=0;i<this.nodes.length;i++){
     var neur=this.nodes[i];
-    neur.error=this.unsquish(neur.error);
+    neur.error=neur.error*this.unsquish(neur.value);
+    neur.bias-=network.learningC*neur.error;
     inp.push(neur.error);
   }
   for(var i=0;i<this.BCons.length;i++){

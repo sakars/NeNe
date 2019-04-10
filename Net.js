@@ -7,7 +7,7 @@ function Net(layers){
   this.layers=layers;
   this.connections={};
   this.unnId=0;
-  this.learningC=0.5;
+  this.learningC=0.001;
 }
 Net.prototype.connect=function(fromId,toId){
   this.connections[fromId+"-"+toId]=new Weight(this.blocks[fromId].count,this.blocks[toId].count);
@@ -52,10 +52,13 @@ Net.prototype.forwardProp=function(){
   }
 }
 Net.prototype.backProp=function(rightO){//[[key,[values]],[key,[values]]]
+  var err=[];
   for(var i=0;i<rightO.length;i++){
     var block=this.blocks[rightO[i][0]];
+    err.push([]);
     for(var i2=0;i2<rightO[i][1].length;i2++){
       block.nodes[i2].error=block.nodes[i2].value-rightO[i][1][i2];
+      err[i].push(block.nodes[i2].error);
     }
   }
   for(var i=this.layers-1;i>=0;i--){
@@ -64,6 +67,7 @@ Net.prototype.backProp=function(rightO){//[[key,[values]],[key,[values]]]
       block.propagateBack(this);
     }
   }
+  return err;
 }
 Net.prototype.getBlockOutput=function(Id,round){
   var block=this.blocks[Id];

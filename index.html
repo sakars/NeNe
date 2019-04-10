@@ -12,30 +12,54 @@
 <script>
   var ctx = myCanvas.getContext("2d");
   var net=new Net(3);
+  var its=0;
   net.addBlock(2,0,net.noSquish,net.noSquish,"input",true);
-  net.addBlock(10,1,net.sigmoid,net.Isigmoid,"middle");
-  net.addBlock(1,2,net.sigmoid,net.Isigmoid,"output");
+  net.addBlock(15,1,net.sigmoid,net.Isigmoid,"middle");
+  net.addBlock(2,2,net.sigmoid,net.Isigmoid,"output");
   net.connect("input","middle");
   net.connect("middle","output");
   function update(){
-    net.setBlock("input",[1,1]);
-    net.forwardProp();
-    net.backProp([["output",[0]]]);
-    console.log(net.getBlockOutput("output",true));
-    net.setBlock("input",[0,1]);
-    net.forwardProp();
-    net.backProp([["output",[1]]]);
-    console.log(net.getBlockOutput("output",true));
-    net.setBlock("input",[1,0]);
-    net.forwardProp();
-    net.backProp([["output",[1]]]);
-    console.log(net.getBlockOutput("output",true));
-    net.setBlock("input",[0,0]);
-    net.forwardProp();
-    net.backProp([["output",[0]]]);
-    console.log(net.getBlockOutput("output",true));
-    console.log(net);
-    setTimeout(update,1);
+    switch (Math.floor(Math.random()*4)) {
+      case 0:
+        net.setBlock("input",[1,1]);
+        net.forwardProp();
+        net.backProp([["output",[1,0]]]);
+      break;
+      case 1:
+        net.setBlock("input",[1,-1]);
+        net.forwardProp();
+        net.backProp([["output",[0,1]]]);
+      break;
+      case 2:
+        net.setBlock("input",[-1,1]);
+        net.forwardProp();
+        net.backProp([["output",[0,1]]]);
+      break;
+      case 3:
+        net.setBlock("input",[-1,-1]);
+        net.forwardProp();
+        net.backProp([["output",[0,1]]]);
+      break;
+    }
+    its++;
+    if(its==1000){
+      net.setBlock("input",[1,1]);
+      net.forwardProp();
+      console.log(net.getBlockOutput("output",true));
+      net.setBlock("input",[-1,1]);
+      net.forwardProp()
+      console.log(net.getBlockOutput("output",true));
+      net.setBlock("input",[1,-1]);
+      net.forwardProp();
+      console.log(net.getBlockOutput("output",true));
+      net.setBlock("input",[-1,-1]);
+      net.forwardProp();
+      console.log(net.getBlockOutput("output",true));
+      console.log(net);
+      its=0;
+    }
+    //net.learningC=net.learningC*0.9999;
+    setTimeout(update,0);
   }
   update();
 </script>

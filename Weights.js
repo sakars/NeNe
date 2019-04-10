@@ -3,7 +3,7 @@ function Weight(inp,out){
   for(var i=0;i<inp;i++){
     this.weights.push([]);
     for(var i2=0;i2<out;i2++){
-      this.weights[i].push(this.random(-2,2,2));
+      this.weights[i].push(this.random(-1,1,2));
     }
   }
   this.out=[];
