@@ -7,7 +7,7 @@ function Net(layers){
   this.layers=layers;
   this.connections={};
   this.unnId=0;
-  this.learningC=0.002;
+  this.learningC=0.1;
 }
 Net.prototype.connect=function(fromId,toId){
   this.connections[fromId+"-"+toId]=new Weight(this.blocks[fromId].count,this.blocks[toId].count);
