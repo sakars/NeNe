@@ -4,7 +4,8 @@
 </head>
 
 <body>
-<canvas id=myCanvas width=300 height=300 style="background-color: pink;"> </canvas>
+<canvas id=myCanvas width=640 height=640 style="background-color: pink;"> </canvas>
+<p id="dati"></p>
 <script src="Net.js"></script>
 <script src="Weights.js" charset="utf-8"></script>
 <script src="Block.js" charset="utf-8"></script>
@@ -19,21 +20,28 @@
     }
   }
   var pel={x:15,y:15};
-  grid[pel.x][pel.y]=1;
-  var snake=[{x:20,y:20},{x:21,y:20}];
+  var snake=[{x:20,y:20},{x:22,y:20},{x:21,y:20}];
   snake.forEach(function(a){
     grid[a.x][a.y]=-1;
   });
+  var maxl=0;
   var headAt=0;
   var tailAt=1;
+  var mrating=0;
+  var deltax=pel.x-snake[headAt].x;
+  var deltay=pel.y-snake[headAt].y;
   var net=new Net(3);
-  net.addBlock(288,0,net.noSquish,net.noSquish,"input",true);//17x17-head
+  var speed=100;
+  var dead=false;
+  var speedc=1;
+  var score=0;
+  net.addBlock(292,0,net.noSquish,net.noSquish,"input",true);//17x17-head+4 ways
   net.addBlock(16,1,net.sigmoid,net.Isigmoid,"middle");
   net.addBlock(4,2,net.sigmoid,net.Isigmoid,"output");
   net.connect("input","middle");
   net.connect("middle","output");
   function update(){
-
+    mrating=0;
     var inputs=[];
     for(var i=-8;i<8;i++){
       for(var i2=-8;i2<8;i2++){
@@ -53,15 +61,15 @@
     }
     if(bigg==0){
       snake[tailAt].x=snake[headAt].x;
-      snake[tailAt].y=snake[headAt].y-1;
+      snake[tailAt].y=(32+snake[headAt].y-1)%32;
     }else if(bigg==1){
-      snake[tailAt].x=snake[headAt].x+1;
+      snake[tailAt].x=(32+snake[headAt].x+1)%32;
       snake[tailAt].y=snake[headAt].y;
     }else if(bigg==2){
       snake[tailAt].x=snake[headAt].x;
-      snake[tailAt].y=snake[headAt].y+1;
+      snake[tailAt].y=(32+snake[headAt].y+1)%32;
     }else if(bigg==3){
-      snake[tailAt].x=snake[headAt].x-1;
+      snake[tailAt].x=(32+snake[headAt].x-1)%32;
       snake[tailAt].y=snake[headAt].y;
     }
     headAt++;
@@ -69,11 +77,77 @@
     tailAt++;
     if(tailAt==snake.length)tailAt=0;
     if(snake[headAt].x==pel.x && snake[headAt].y==pel.y){
-      pel.y=random(0,32);
-      pel.x=random(0,32);
-      snake.splice(tailAt,0,{x:snake[tailAt].x,y:snake[tailAt].y});
+      pel.y=random(0,31);
+      pel.x=random(0,31);
+      snake.splice(tailAt,0,{x:snake[(snake.length+headAt-1)%snake.length].x,y:snake[(snake.length+headAt-1)%snake.length].y});
+      if(maxl<snake.length){
+        maxl=snake.length;
+        dati.innerHTML=maxl;
+        speedc=0.001;
+        console.log(speedc);
+      }
+      mrating+=5;
     }
+    var head=snake[headAt];
+    for(var i=0;i<snake.length;i++){
+      if(i!=headAt){
+        if(head.x==snake[i].x && head.y==snake[i].y){
+          mrating-=30;
+          dead=true;
+          break;
+        }
+      }
+    }
+    if(Math.abs(deltax)>Math.abs(pel.x-snake.x)){
+      mrating++;
+      score++;
+    }else{
+      mrating-=5;
+      score-=5;
+    }
+    deltax=pel.x-snake[headAt].x;
+    if(Math.abs(deltay)>Math.abs(pel.y-snake.y)){
+      mrating++;
+      score++;
+    }else{
+      mrating-=5;
+      score-=5;
+    }
+    deltay=pel.y-snake[headAt].y;
 
+    var o=[0,0,0,0];
+    if(deltay<0){
+      o[0]=1;
+    }else if(deltay>0){
+      o[2]=1;
+    }else{
+      //o[0]=1;
+      //o[2]=1;
+    }
+    if(deltax<0){
+      o[3]=1;
+    }else if(deltax>0){
+      o[1]=1;
+    }else{
+      //o[3]=1;
+      //o[1]=1;
+    }
+    snake.forEach(function(a){
+      if(snake[(snake.length+headAt-1)%snake.length].y-1==a.y && snake[(snake.length+headAt-1)%snake.length].x==a.x){
+        o[0]=0;
+      }else
+      if(snake[(snake.length+headAt-1)%snake.length].y==a.y && snake[(snake.length+headAt-1)%snake.length].x+1==a.x){
+        o[1]=0;
+      }else
+      if(snake[(snake.length+headAt-1)%snake.length].y+1==a.y && snake[(snake.length+headAt-1)%snake.length].x==a.x){
+        o[2]=0;
+      }else
+      if(snake[(snake.length+headAt-1)%snake.length].y==a.y && snake[(snake.length+headAt-1)%snake.length].x-1==a.x){
+        o[3]=0;
+      }
+    });
+    net.learningC=speedc*Math.abs(mrating);
+    net.backProp([["output",o]]);
     grid=[];
     for(var i=0;i<32;i++){
       grid.push([]);
@@ -81,12 +155,31 @@
         grid[i].push(0);
       }
     }
-
-    grid[pel.x][pel.y]=1;
+    if(dead || score< -2000){
+      score=0;
+      dead=false;
+      pel={x:15,y:15};
+      snake=[{x:20,y:20},{x:22,y:20},{x:21,y:20}];
+      headAt=0;
+      tailAt=1;
+    }
     snake.forEach(function(a){
       grid[a.x][a.y]=-1;
     });
-    setTimeout(update,0);
+    ctx.clearRect(0,0,myCanvas.width,myCanvas.height);
+    snake.forEach(function(a,i){
+      if(i==headAt){
+        ctx.fillStyle="red";
+      }else if(i==tailAt){
+        ctx.fillStyle="green";
+      }else{
+        ctx.fillStyle="black";
+      }
+      ctx.fillRect(a.x*20+1,a.y*20+1,18,18);
+    });
+    ctx.fillStyle="black";
+    ctx.fillRect(pel.x*20+5,pel.y*20+5,10,10);
+    setTimeout(update,speed);
   }
   update();
   function random(min,max){
