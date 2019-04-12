@@ -1,0 +1,1477 @@
+<HTML>
+<head>
+<title> OPLoRD - Race Drift Game </title>
+<link href="https://fonts.googleapis.com/css?family=Cardo" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+<style>
+    body{
+        background-color: white;
+        margin: 0;
+    }
+    .container{
+        position: absolute;
+        top:-50%;
+        left:-50%;
+        width:100%;
+        height:100%;
+        transform: translateY(15%);
+    }
+    canvas{
+        position: absolute;
+        left:50%;
+        transform: translateX(-50%);
+        top:30px;
+        background-color: none;
+        transform: scale(0.8, 0.8);
+    }
+    input{
+        font-family: "Montserrat";
+        position: relative;
+        border: none;
+        padding: 4px 10px;
+        outline:none;
+    }
+    button, select, option, #statsT, #sposT, #resultList{
+        font-family: "Montserrat";
+        position: relative;
+        border: none;
+        padding: 4px 10px;
+        outline:none;
+        background-color: transparent;
+        color:black;
+    }
+    #settings{
+        position: absolute;
+        top:5px;
+        left:0px;
+    }
+    #devn{
+        position: absolute;
+        top:5px;
+        right:0px;
+    }
+    #lead{
+        position: absolute;
+        top:35px;
+        right:0px;
+    }
+    #loadGameButton{
+        position: absolute;
+        top:35px;
+        left:0px;
+    }
+    #loadTourneyButton{
+        position: absolute;
+        top:67px;
+        left:0px;
+    }
+    #settingsContainer, #gameContainer, #showContainer, #tourneyContainer, #tourneyEndContainer{
+        display: none;
+        position: absolute;
+        left:0px;
+        top:0px;
+        width:100%;
+        height:100%;
+    }
+    #showContainer{
+        display: inline;
+        pointer-events: none;
+    }
+    #back, #backG, #backS, #backT, #backTEC{
+        position: absolute;
+        width:100%;
+        height:100%;
+        background-color: rgba(0, 0, 0, 0.4);
+    }
+    #sets, #setsG, #setsT, #setsTEC{
+        position: absolute;
+        width:500px;
+        height:400px;
+        background-color: white;
+        border: 5px solid black;
+        border-radius: 10px;
+        left:50%;
+        top:50%;
+        transform: translate(-50%, -50%);
+    }
+    #statsT, #resultList, #sposT{
+        text-align: center;
+    }
+
+    .center{
+        left:50%;
+        transform: translateX(-50%);
+    }
+    .left{
+        left: 30px;
+    }
+    .downleft{
+        color: green;
+        position: absolute;
+        left: 30px;
+        bottom: 30px;
+    }
+    .right{
+        float: right;
+        right: 60px;
+    }
+    #resultName{
+        font-size: 21px;
+    }
+    #drift{
+        opacity: 1;
+        transition: all 2s ease;
+    }
+    #plN, #pl, #mode, #modeN, #coll, #collB{
+        display: none;
+    }
+    #showCard{
+        position: absolute;
+        left:50%;
+        top:50%;
+        width: 100%;
+        transform: translate(-50%, -50%);
+        font-size: 0px;
+        transition: all 0.5s;
+    }
+    #showcard.sha{
+        font-size: 80px;
+    }
+</style>
+</head>
+<body>
+<div class = "container">
+    <canvas id="permanent" width=1600 height=1600></canvas>
+    <canvas id="drift" width=1600 height=1600></canvas>
+    <canvas id="game" width=1600 height=1600></canvas>
+</div>
+<button onclick="openSettings();" id = "settings">Settings</button>
+<button onclick="openGame();" id = "loadGameButton">Load Game</button>
+<button onclick="openTourney();" id = "loadTourneyButton">Load Tourney</button>
+<button onclick="openNotes();" id = "devn">Updates</button>
+<button onclick="openLeads();" id = "lead">Leaderboards</button>
+
+<div id = "showContainer">
+    <button id = "showCard">2</button>
+</div>
+
+<div id = "settingsContainer">
+    <div id = "back" onclick="closeSettings();"></div>
+    <div id = "sets">
+        <br><button onclick="closeSettings();" id="cls" class="center">Back</button><br><br>
+        <input type="text" max="20" id="claim" placeholder="Insert Coupon Here!" class = "left">
+        <button onclick="coupon(document.getElementById('claim').value);" id = "launch" class = "right">Apply</button><br><br>
+        <button id="SplaceB" class = "left">Starting Position:</button>
+        <select id = "Splace" class = "right">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select><br><br>
+        <button id="ccs" class = "left">Car Color:</button>
+        <select id = "ccB" onchange="chancc();" class = "right">
+            <option id="cc0" value="0" selected>White</option>
+            <option id="cc1" value="1" disabled>Blue</option>
+            <option id="cc2" value="3" disabled>Green</option>
+            <option id="cc3" value="2" disabled>Black</option>
+            <option id="cc4" value="4" disabled>Gold</option>
+            <option id="cc5" value="5">Basic (faster)</option>
+            <option id="cc6" value="6" disabled>Coming Soon!</option>
+        </select><br><br>
+        <button id="cups" class = "left">Car Drift Color:</button>
+        <select id = "cupsB" onchange="chandr();" class = "right">
+            <option id="cup1" value="1" selected>Black</option>
+            <option id="cup2" value="2" disabled>Green</option>
+            <option id="cup3" value="3" disabled>Blue</option>
+            <option id="cup4" value="4" disabled>Purple</option>
+            <option id="cup5" value="5" disabled>Red</option>
+            <option id="cup5" value="6">None (faster)</option>
+            <option id="cup5" value="7" disabled>Coming Soon!</option>
+        </select><br><br>
+        <button onclick="clearD();" id = "clearDrift" class="center">Clear Drift Marks</button>
+    </div>
+</div>
+
+<div id = "gameContainer">
+    <div id = "backG" onclick="closeGame();"></div>
+    <div id = "setsG">
+        <br><button onclick="closeGame();" id="clg" class="center">Back</button><br><br>
+        <button id = "map" class = "left">Map:</button>
+        <select id = "mapN" class = "right" onchange="checkAchievements()">
+            <option value="4" selected>Iesācēju Trasīte</option>
+            <option value="1">Štovēti Kāposti</option>
+            <option value="2">Blenderēts Zaķis</option>
+            <option value="3">Kosmosa Zāģētava</option>
+            <option value="5">Bremzi Grīdā</option>
+            <option value="6">Laukums</option>
+        </select><br><br>
+        <button id = "lap" class = "left">Lap Count:</button>
+        <select id = "lapN" class = "right" onchange="checkAchievements()">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+        </select><br><br>
+        <button id = "mult" class = "left">Multiplayer:</button>
+        <button id = "multBool" class = "right" onclick = "multBool();">Disabled</button><br><br>
+        <button id = "pl" class = "left">Players:</button>
+        <select id = "plN" class = "right" onchange="playerCount = document.getElementById('plN').options[document.getElementById('plN').selectedIndex].value;">
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select><br><br>
+        <button id = "mode" class = "left">Mode:</button>
+        <select id = "modeN" class = "right" onchange="">
+            <option value="2" selected>Classic</option>
+            <option value="3" disabled>Domination</option>
+            <option value="4" disabled>Teams</option>
+            <option value="5" disabled>Coming Soom!</option>
+        </select><br><br>
+        <button id = "coll" class = "left">Collisions:</button>
+        <button id = "collB" class = "right" onclick = "collBool();">Disabled</button><br>
+        <button onclick="startGame(document.getElementById('mapN').options[document.getElementById('mapN').selectedIndex].value - 1,
+        Number(document.getElementById('lapN').options[document.getElementById('lapN').selectedIndex].value),
+        document.getElementById('Splace').options[document.getElementById('Splace').selectedIndex].value);" id = "launch" class="center">Launch</button>
+        <button id = "ach" class = "downleft">*Achievements are enabled for this mode</button>
+    </div>
+</div>
+
+<div id = "tourneyContainer">
+    <div id = "backT" onclick="closeTourney();"></div>
+    <div id = "setsT">
+        <br><button onclick="closeTourney();" id="clt" class="center">Back</button><br><br>
+        <button id = "typeT" class = "left">Type:</button>
+        <select id = "typeNT" class = "right" onchange="updateStatsT();">
+            <option value="1" selected>Classic</option>
+            <option value="2">Balance</option>
+            <option value="3">Classic Extended</option>
+            <option value="4">Sprint 1</option>
+            <option value="5">Sprint 2</option>
+            <option value="8">Sprint 3</option>
+            <option value="6">Marathon 1</option>
+            <option value="7">Marathon 2</option>
+            <option value="9">Saecl's Selection</option>
+        </select><br><br>
+        <button id = "sposT" class = "left">Starting Positions:</button>
+        <select id = "sposNT" class = "right" onchange="updateStatsT();">
+            <option value="1" selected>Default</option>
+            <option value="2">Classic</option>
+            <option value="3">Pro</option>
+        </select><br><br>
+        <div id = "statsT" class = "center"></div>
+        <div id = "sposT" class = "center"></div>
+        <button onclick="startTourney();" id = "launchT" class="center">Launch</button>
+    </div>
+</div>
+
+<div id = "tourneyEndContainer">
+    <div id = "backTEC" onclick="closeTEC();"></div>
+    <div id = "setsTEC">
+        <br><button onclick="closeTEC();" id="cltec" class="center">Back</button><br><br>
+        <button id = "resultName" class = "center"></button>
+        <div id = "resultList"></div>
+    </div>
+</div>
+<script>
+var cookie=document.cookie.split(";");
+var n=-1;
+var time;
+var rays = 10;
+var viewAngle = 0.9;
+var viewDistance = 500;
+
+for(var i=0;i<cookie.length;i++){
+    cookie[i]=cookie[i].split("=");
+    if(cookie[i][0]=="bitmap"){
+        n=i;
+        break;
+    }
+}
+
+if(n==-1 || cookie[i][1].length < 8){
+    document.cookie="bitmap=00000000;";
+    n=0;
+    location.reload();
+}
+
+cookie = document.cookie.split(";");
+
+for(var i=0;i<cookie.length;i++){
+    cookie[i]=cookie[i].split("=");
+    if(cookie[i][0]=="bitmap"){
+        n=i;
+        break;
+    }
+}
+
+for(var i=0;i<4;i++){
+    if(cookie[n][1].charAt(i)==1){
+        document.getElementById("cup"+(i+2)).disabled="";
+    }
+}
+
+for(var i=0;i<4;i++){
+    if(cookie[n][1].charAt(i+4)==1){
+        document.getElementById("cc"+(i+1)).disabled="";
+    }
+}
+
+String.prototype.replaceAt = function (index, replacement) {
+    return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+}
+
+var carImages = [[],[]];
+for(p = 0; p < 5; p++){
+    carImages[0].push(new Image(10,20));
+    carImages[0][p].src = "Car_" + p + ".png";
+    carImages[1].push([]);
+    for(g = 0; g < 2; g++){
+        carImages[1][p].push(new Image(10,25));
+        carImages[1][p][g].src = "Car_" + p + "_drive_" + (g+1) + ".png";
+    }
+}
+
+var stopMovement = false;
+var playerCount = 1;
+var multiResults = []; //winner
+var multiplayer = false;
+var multiCollisions = false;
+
+var tourneyResults = [];
+var tourneyLevel = 0;
+var tourneyId = 0;
+var tourney = false;
+var tourneySposType = 0;
+var tourneyTime = 0;
+
+var driftDraw = true;
+var level = 3;
+var gameCanvas = document.getElementById("game");
+var ctx = document.getElementById("game").getContext("2d");
+var dtx = document.getElementById("drift").getContext("2d");
+var ptx = document.getElementById("permanent").getContext("2d");
+const offset = [800, 800];
+dtx.translate(offset[0], offset[1]);
+ptx.translate(offset[0], offset[1]);
+ctx.translate(offset[0], offset[1]);
+dtx.transform(1.5, 0, 0, -1.5, 0, 0);
+ctx.transform(1.5, 0, 0, -1.5, 0, 0);
+ptx.transform(1.5, 0, 0, -1.5, 0, 0);
+ctx.font = "30px Montserrat"
+dtx.fillStyle = "rgba(0, 0, 0, 0.5)";
+var lapLimit = 1;
+var track = [];//[new TrackPiece(-350,-300,-350,300,50,50,false,true),new TrackPiece(-300,100,290,100,0,0,false,true),new TrackPiece(375,110,-280,-350,40,60,true,true)];[new TrackPiece(-350,-300,-350,300,50,50,false,true),new TrackPiece(-300,100,290,100,0,0,false,true),new TrackPiece(375,110,-280,-350,40,60,true,true)];
+var tourneys = [
+    [[1, 1], [2, 1], [3, 1], [5, 1], "Classic", "1.5 minutes", 71.521],
+    [[4, 5], [1, 3], [2, 2], [3, 2], [5, 1], "Balance", "3 minutes", 178.812],
+    [[1, 3], [2, 3], [3, 3], [5, 3], "Classic Extended", "4.5 minutes", 218.611],
+    [[4, 3], [1, 3], "Sprint 1", "1.25 minutes", 58.392],
+    [[4, 5], [1, 5], "Sprint 2", "2 minutes", 107.544],
+    [[4, 20], [1, 20], "Marathon 1", "8 minutes", 413.269],
+    [[1, 10], [2, 10], [3, 10], [5, 10], "Marathon 2", "14 minutes", 755.622],
+    [[3, 2], [5, 2], "Sprint 3", "1.5 minutes", 89.131],
+    [[1, 2], [4, 3], [1, 2], [5, 1], [3, 1], [1, 1], "Saecl's Selection", "2.5 minutes", 132.211]
+];
+var tourneySpos = [
+    [1, 1, 3],
+    [1, 2, 2],
+    [1, 2, 4],
+    [1, 4, 1],
+    [1, 3, 4]
+];
+var sposKeys = ["Default", "Classic", "Pro"];
+var finish = [
+    [
+        [-400,30,-300,30, "Finiša 180"],
+        [0,200,0,150, "Piltuve"],
+        [100,150,200,150, "Siena"],
+        [-300,-50,-200,-50, "Brīvības Laukums"],
+        "Štovēti Kāposti",
+        [[20, 17, 15, 13],[45, 43, 41]]
+    ],
+    [
+        [-110,70,80,70, "Brīvais Raksts"],
+        [110,-80,200,-80, "Sprauga"],
+        [-300,-130,-400,-130, "Maltā Gaļa"],
+        [-300,270,-110,270, "Pitagora Taisne"],
+        "Blenderēts Zaķis",
+        [[24, 20, 18, 16],[58, 54, 52]]
+    ],
+    [
+        [-220,150,-50,150, "Turbulence"],
+        [-220,-70,-220,10, "Grieze"],
+        [120,-60,200,-60, "Lidojošie Četrstūri"],
+        [70,300,70,400, "Zāģis"],
+        "Kosmosa Zāģētava",
+        [[24, 20, 18, 16],[58, 54, 52]]
+    ],
+    [
+        [-400,120,-220,120, "Beigu Līkums"],
+        [-10,240,-10,400, "Sākuma Grieziens"],
+        [-10,0,200,0, "Līkloči"],
+        "Iesācēju Trasīte",
+        [0]
+    ],
+    [
+        [-360,180,-250,150, "Āmurgalva"],
+        [-220,50,-220,-50, "Vjeta Līkne"],
+        [-360,-200,-360,-80, "Ņūtona Lamatas"],
+        [-100,-50,0,-50, "Kriša Gulags"],
+        [150,355,200,355, "Hrr"],
+        [-360,355,-375,383, "Ieskurbtuve"],
+        "Bremzi Grīdā",
+        [[29, 28, 27, 26],[87, 83, 80]]
+    ],
+    [
+        [0,0,0,0, ""],
+        "Laukums",
+        [0]
+    ]
+];
+var tobs = [
+    [
+        [-400, 400, 200, 400],
+        [-400, -200, -400, 400],
+        [-300, -100, -300, 270],
+        [-150, 250, -150, 400],
+        [-300, 100, -100, 100],
+        [-100, 100, 0, 150],
+        [-100, 250, 0, 200],
+        [-150, 250, -100, 250],
+        [100, 150, 100, 300],
+        [100, 150, 100, 300],
+        [0, 150, 100, 150],
+        [200, -50, 200, 400],
+        [-200, -50, 200, -50],
+        [-200, -50, -200, -200],
+        [-200, -200, -400, -200]
+    ],
+    [
+        [-400, 400, 200, 400],
+        [-110, 40, -110, 330],
+        [-110, 330, -140, 400],
+        [-110, 330, -80, 400],
+        [80, 70, 80, 300],
+        [80, 70, 110, 0],
+        [170, 70, 200, 0],
+        [170, 70, 170, 200],
+        [170, 200, 200, 270],
+        [200, 400, 200, 270],
+        [200, 0, 200, -250],
+        [110, 0, 110, -80],
+        [110, -80, -250, -80],
+        [200, -250, -170, -250],
+        [100, -250, 0, -150],
+        [-200, -80, -100, -180],
+        [-170, -250, -220, -200],
+        [-220, -200, -270, -250],
+        [-250, -80, -300, -130],
+        [-250, -80, -300, -30],
+        [-400, -250, -400, 400],
+        [-300, -130, -300, 270],
+        [-270, -250, -400, -250],
+        [-110, 40, -210, 40],
+    ],
+    [
+        [-450, 400, 200, 400],
+        [-450, -240, -450, 400],
+        [-220, 10, -220, 260],
+        [-220, 260, -260, 50],
+        [-290, 260, -380, 260],
+        [-335, 200, -290, 260],
+        [-335, 200, -380, 260],
+        [-450, 260, -410, 50],
+        [-410, 50, -370, 10],
+        [-260, 50, -300, 10],
+        [-370, 10, -450, -60],
+        [-300, 10, -300, -60],
+        [-300, -60, -220, 10],
+        [-220, 10, -140, -60],
+        [-220, -70, -280, -240],
+        [-220, -70, -160, -240],
+        [-450, -240, 200, -240],
+        [200, -240, 200, 400],
+        [-140, -60, 120, -60],
+        [20, -90, 50, -120],
+        [20, -90, -10, -120],
+        [50, -120, 20, -150],
+        [20, -150, -10, -120],
+        [-80, -150, -50, -180],
+        [-80, -150, -110, -180],
+        [-50, -180, -80, -210],
+        [-80, -210, -110, -180],
+        [120, -60, 70, 100],
+        [200, -60, 150, 100],
+        [70, 100, 120, 140],
+        [150, 100, 200, 140],
+        [120, 140, 70, 300],
+        [200, 140, 150, 300],
+        [150, 300, 200, 340],
+        [-50, 400, -50, 70],
+        [0, 300, 0, 310],
+        [30, 250, 30, 250 + 10],
+        [-30, 200, -30, 200 + 10],
+        [10, 160, 10, 160 + 10],
+        [-15, 110, -15, 110 + 10],
+        [50, 190, 50, 190 + 10],
+        [30, 70, 30, 70 + 10],
+    ],
+    [
+        [-400, 400, 200, 400],
+        [-400, -200, -400, 400],
+        [200, 400, 200, -200],
+        [200, -200, -400, -200],
+        [-220, 0, -220, 240],
+        [-220, 240, -10, 240],
+        [-10, 120, 200, 120],
+        [-220, 0, -10, 0],
+    ],
+    [
+        [-345, 400, 200, 400],
+        [200, 400, 200, -200],
+        [200, -200, -530, -200],
+        [-345, 400, -530, 300],
+        [-530, 80, -250, 80],
+        [-250, 80, -250, 150],
+        [-250, 150, -235, 170],
+        [-220, 150, -235, 170],
+        [-220, 150, -220, 50],
+        [-360, 180, -360, 355],
+        [-360, 180, -290, 355],
+        [-100, 180, -170, 355],
+        [-360, 355, 150, 355],
+        [-100, -50, -100, 355],
+        [-100, -50, -330, -50],
+        [-360, -20, -330, -50],
+        [-360, -80, -330, -50],
+        [-360, -80, -360, -20],
+        [-360, 50, -220, 50],
+        [-360, 50, -390, 80],
+
+        [-300 - 60, -200, -220 - 60, -120],
+        [-230 - 60, -50, -150 - 60, -130],
+
+        [-300 + 70, -200, -220 + 70, -120],
+        [-230 + 70, -50, -150 + 70, -130],
+
+        [0, -200, 0, 30],
+        [-100, 150, 100, 150],
+        [100, -90, 100, 150],
+        [200, 252, 0, 252],
+
+        [-530, -200, -530, 300]
+    ],
+    [
+    ]
+];
+reiterate();
+var spos = [
+    [
+        [-380, 10],
+        [-340, -20],
+        [-380, -50],
+        [-340, -80],
+    ],
+    [
+        [-80, 50],
+        [-50, 50],
+        [-20, 50],
+        [10, 50],
+    ],
+    [
+        [-195, 130],
+        [-160, 130],
+        [-125, 130],
+        [-90, 130],
+    ],
+    [
+        [-380, 100],
+        [-340, 100],
+        [-300, 100],
+        [-260, 100],
+    ],
+    [
+        [-355, 165 + 3],
+        [-330, 157 + 3],
+        [-305, 149 + 3],
+        [-280, 141 + 3],
+    ],
+    [
+        [-10, -200],
+        [-10, -200],
+        [-10, -200],
+        [-10, -200],
+    ]
+];
+var cars = [
+    new car(0, 0, 90, [87, 83, 68, 65, 81], 0, "")
+];
+cars[0].respawn();
+var obs = [];
+for(i = 0; i < tobs[level].length; i++){
+    obs.push(tobs[level][i]);
+}
+function car(x, y, ang, keys, spawn, driftColor){
+    this.spawn = spawn;
+    this.check=0;
+    this.x = x;
+    this.y = y;
+    this.acc=0;
+    this.angle=ang;
+    this.slida=ang;
+    this.dria=ang;
+    this.wheel=0;
+    this.mov=[0,0,0,0];
+    this.xs=10;
+    this.ys=20;
+    this.ds=Math.sqrt(Math.pow(this.xs,2)+Math.pow(this.ys,2));
+    this.ed=[];
+    this.lap = 0;
+    this.carId = 0;
+    this.st = new Date().getTime();
+    this.respawn = function(){
+        this.x = spos[level][this.spawn][0] + 9;
+        this.y = spos[level][this.spawn][1] - 14;
+        this.mov[0] = [0,0,0,0];
+        this.ang = 90;
+        this.angle = 90;
+        this.slida = 90;
+        this.acc = 0;
+        this.wheel = 0;
+        this.upedg();
+        this.check = 0;
+        this.timeHistory = [];
+        this.st = new Date().getTime();
+        this.lap = 0;
+    }
+    this.upedg=function(){
+        tempo1=(this.angle)/180*Math.PI;
+        tempo2=Math.sqrt(this.xs/2*this.xs/2+this.ys/2*this.ys/2);
+        tempo3=Math.atan2(this.xs,this.ys);
+        this.ed=[
+            [this.x-tempo2*Math.cos(tempo3+tempo1)   ,   this.y-tempo2*Math.sin(tempo3+tempo1)],
+            [this.x-tempo2*Math.cos(-tempo3+tempo1)  ,   this.y-tempo2*Math.sin(-tempo3+tempo1)],
+            [this.x+tempo2*Math.cos(tempo3+tempo1)   ,   this.y+tempo2*Math.sin(tempo3+tempo1)],
+            [this.x+tempo2*Math.cos(-tempo3+tempo1)  ,   this.y+tempo2*Math.sin(-tempo3+tempo1)]
+        ];
+    }
+    this.upedg();
+    this.keys = keys;
+    this.timeHistory = [];
+    this.times = [];
+    this.driftColor = driftColor;
+}
+function reiterate(){
+    for(var i=0;i<tobs.length;i++){
+        for(var i2=0;i2<tobs[i].length;i2++){
+            tobs[i][i2]=new wall(tobs[i][i2][0],tobs[i][i2][1],tobs[i][i2][2],tobs[i][i2][3]);
+        }
+    }
+}
+function wall(x1,y1,x2,y2){
+    this.x1=x1;
+    this.y1=y1;
+    this.x2=x2;
+    this.y2=y2;
+    dx=this.x2-this.x1;
+    dy=this.y2-this.y1;
+    this.h=Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2));
+    this.vector=[dx/this.h,dy/this.h];
+    this.angle=Math.atan2(dy,dx);
+}
+function pDistance(x, y, x1, y1, x2, y2) {
+  var A = x - x1;
+  var B = y - y1;
+  var C = x2 - x1;
+  var D = y2 - y1;
+  var dot = A * C + B * D;
+  var len_sq = C * C + D * D;
+  var param = -1;
+  if (len_sq != 0) //in case of 0 length line
+      param = dot / len_sq;
+  var xx, yy;
+  if (param < 0) {
+    xx = x1;
+    yy = y1;
+  }
+  else if (param > 1) {
+    xx = x2;
+    yy = y2;
+  }
+  else {
+    xx = x1 + param * C;
+    yy = y1 + param * D;
+  }
+  var dx = x - xx;
+  var dy = y - yy;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+function lineLine(x1, y1, x2, y2, x3, y3, x4, y4) {
+
+  // calculate the distance to intersection point
+  var uA=((x4-x3)*(y1-y3)-(y4-y3)*(x1-x3))/((y4-y3)*(x2-x1)-(x4-x3)*(y2-y1));
+  var uB=((x2-x1)*(y1-y3)-(y2-y1)*(x1-x3))/((y4-y3)*(x2-x1)-(x4-x3)*(y2-y1));
+  // if uA and uB are between 0-1, lines are colliding
+  if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
+    return true;
+  }
+  return false;
+}
+function random(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) ) + min;
+}
+function update(){
+    var fst=new Date().getTime();
+    //update moves
+    for(var i2=0;i2<cars.length;i2++){
+        if(cars[i2].mov[2]==1){
+            if(cars[i2].wheel<1)
+            cars[i2].wheel+=0.02;
+        }else
+        if(cars[i2].mov[3]==1){
+            if(cars[i2].wheel>-1)
+            cars[i2].wheel-=0.02;
+        }else{
+            if(Math.abs((cars[i2].angle-cars[i2].slida))<20){
+                cars[i2].slida=cars[i2].angle;
+            }
+            if(Math.abs(cars[i2].wheel)>0.01)   cars[i2].wheel-=Math.sign(cars[i2].wheel)*0.01;
+        }
+        if(cars[i2].mov[0]==1 && !cars[i2].stopMovement){
+            if(cars[i2].acc<2){ cars[i2].acc+=0.01;}
+            else if(Math.abs(cars[i2].wheel)>0.2){
+            }
+        }else if(cars[i2].mov[1]==1 && !cars[i2].stopMovement){
+            if(cars[i2].acc>=-1){ cars[i2].acc-=0.02;}
+            else if(Math.abs(cars[i2].wheel)>0.2){
+            }
+        }else{
+            if(!cars[i2].stopMovement){
+                cars[i2].acc-=Math.sign(cars[i2].acc)*0.005;
+            }
+            else{
+                cars[i2].acc-=Math.sign(cars[i2].acc)*0.02;
+            }
+        }
+        cars[i2].slida+=(cars[i2].angle-cars[i2].slida)*0.01;
+
+        //update car
+        var t;
+        if(Math.sign(cars[i2].acc)==-1){
+            t=Math.PI;
+        }else{
+            t=0;
+        }
+        if(Math.abs(cars[i2].acc)>=0.1)cars[i2].angle-=cars[i2].acc*cars[i2].wheel;
+        cars[i2].x+=Math.abs(cars[i2].acc)*Math.cos((cars[i2].angle+cars[i2].slida)/360*Math.PI+t);
+        cars[i2].y+=Math.abs(cars[i2].acc)*Math.sin((cars[i2].angle+cars[i2].slida)/360*Math.PI+t);
+        cars[i2].upedg();
+        //collisions
+        var ch=false;
+        if(!cars[i2].stopMovement){
+            for(var i3=0;i3<4;i3++){
+                if(lineLine(cars[i2].ed[i3%4][0],cars[i2].ed[i3%4][1] , cars[i2].ed[(i3+1)%4][0],cars[i2].ed[(i3+1)%4][1] , finish[level][cars[i2].check][0],finish[level][cars[i2].check][1] ,finish[level][cars[i2].check][2],finish[level][cars[i2].check][3])){
+                    cars[i2].check++;
+                    cars[i2].timeHistory.push(new Date().getTime() - cars[i2].st);
+                    if(cars[i2].check == finish[level].length-2){
+                        cars[i2].check = 0;
+                    }else if(cars[i2].check == 1){
+                        if(cars[i2].lap == lapLimit){
+                            cars[i2].times.push([]);
+                            cars[i2].times[cars[i2].times.length-1].push((new Date().getTime()-(cars[i2].st+cars[i2].timeHistory[0]))/1000);
+                            for(i = 1; i < cars[i2].timeHistory.length; i++){
+                                cars[i2].times[cars[i2].times.length-1].push((cars[i2].timeHistory[i] - cars[i2].timeHistory[i-1])/1000);
+                            }
+                            if(!tourney && !multiplayer){
+                                awardCoupon((new Date().getTime()-(cars[i2].st+cars[i2].timeHistory[0]))/1000);
+                                resetCar(i2);
+                            }
+                            else if(multiplayer){
+                                multiResults.push([i2, cars[i2].times[o][0]]);
+                                cars[i2].stopMovement = true;
+                                checkMulti();
+                                permDraw();
+                            }
+                            else{
+                                tourneyTime += (new Date().getTime()-(cars[i2].st+cars[i2].timeHistory[0]))/1000;
+                                tourneyResults.push((new Date().getTime()-(cars[i2].st+cars[i2].timeHistory[0]))/1000);
+                                continueTourney();
+                            }
+                            break;
+                        }
+                        cars[i2].lap++;
+                    }
+                }
+            }
+        }
+        var col=false;
+        var col2=false;
+        obloop:
+        for(var i=0;i<obs.length;i++){
+            for(let i3=0;i3<4;i3++){
+                if(pDistance(cars[i2].x,cars[i2].y, obs[i].x1,obs[i].y1 , obs[i].x2,obs[i].y2)<cars[i2].ds/2){
+                    if(lineLine(cars[i2].ed[i3%4][0],cars[i2].ed[i3%4][1] , cars[i2].ed[(i3+1)%4][0],cars[i2].ed[(i3+1)%4][1] , obs[i].x1,obs[i].y1 , obs[i].x2,obs[i].y2)){
+                        col = true;
+                        //cars[i2].slida=(2*Math.PI)-(2*Math.atan2((obs[i][3]-obs[i][1]),(obs[i][0]-obs[i][2])))-((cars[i2].slida+cars[i2].angle)/360*Math.PI);
+                        break obloop;
+                    }
+                }
+            }
+        }
+        if(multiCollisions){
+            ucol:
+            for(var u = 0;u < playerCount; u++){
+                if(u != i2){
+                    for(var i5=0;i5<4;i5++){
+                        for(var i4=0;i4<4;i4++){
+                            if(lineLine(cars[i2].ed[i5%4][0],cars[i2].ed[i5%4][1], cars[i2].ed[(i5+1)%4][0],cars[i2].ed[(i5+1)%4][1], cars[u].ed[i4%4][0],cars[u].ed[i4%4][1], cars[u].ed[(i4+1)%4][0],cars[u].ed[(i4+1)%4][1])){
+                                col2 = true;
+                                break ucol;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(col){
+            cars[i2].x-=Math.abs(cars[i2].acc)*Math.cos((cars[i2].angle+cars[i2].slida)/360*Math.PI+t);
+            cars[i2].y-=Math.abs(cars[i2].acc)*Math.sin((cars[i2].angle+cars[i2].slida)/360*Math.PI+t);
+            temp=obs[i].angle-Math.PI/2*Math.sign((cars[i2].x-obs[i].x1)*(obs[i].y2-obs[i].y1)-(cars[i2].y-obs[i].y1)*(obs[i].x2-obs[i].x1));
+            //console.log(angw*180/Math.PI);
+            //Math.sign((cars[i2].x-obs[i].x1)*(obs[i].y2-obs[i].y1)-(cars[i2].y-obs[i].y1)*(obs[i].x2-obs[i].x1))
+            //console.log(temp/Math.PI*180);
+            cars[i2].x+=Math.cos(temp);
+            cars[i2].y+=Math.sin(temp);
+            cars[i2].slida=cars[i2].angle;
+            if(Math.abs(cars[i2].acc)>0.5)cars[i2].acc=0.5*Math.sign(cars[i2].acc);
+            //cars[i2].slida=(cars[i2].angle+cars[i2].slida)/2+angw/Math.PI*180+90*Math.sign(angw);//-(Math.sign(angw)*720);
+            //if(Math.abs(angw)>Math.PI/2){
+            //    cars[i2].slida-=(Math.sign(angw)*720);
+            //}
+            //cars[i2].acc*=0.5;
+        }
+        if(col2){
+            cars[i2].x-=Math.abs(cars[i2].acc)*Math.cos((cars[i2].angle+cars[i2].slida)/360*Math.PI+t);
+            cars[i2].y-=Math.abs(cars[i2].acc)*Math.sin((cars[i2].angle+cars[i2].slida)/360*Math.PI+t);
+            if(Math.abs(cars[i2].acc)>0.5)cars[i2].acc=0.5*Math.sign(cars[i2].acc);
+        }
+        cars[i2].upedg();
+    }
+    draw();
+    //console.log(new Date().getTime()-fst);
+}
+
+function permDraw(){
+    ptx.clearRect(-gameCanvas.width/2 + 2,-gameCanvas.height/2 + 2,gameCanvas.width,gameCanvas.height);
+    ptx.lineWidth = 2;
+    ptx.strokeStyle = "black";
+    for(i = 0; i < obs.length; i++){
+        ptx.beginPath();
+        ptx.moveTo(obs[i].x1,obs[i].y1);
+        ptx.lineTo(obs[i].x2,obs[i].y2);
+        ptx.stroke();
+    }
+    ptx.strokeStyle = "rgba(0, 0, 0, 0.8)";
+    ptx.beginPath();
+    for(i = 0; i < spos[level].length; i++){
+        ptx.moveTo(spos[level][i][0], spos[level][i][1] - 10);
+        ptx.lineTo(spos[level][i][0], spos[level][i][1]);
+        ptx.lineTo(spos[level][i][0] + 18, spos[level][i][1]);
+        ptx.lineTo(spos[level][i][0] + 18, spos[level][i][1] - 10);
+    }
+    ptx.stroke();
+    ptx.strokeStyle = "#87e014";
+    ptx.beginPath();
+    for(i = 0; i < finish[level].length - 2; i++){
+        ptx.moveTo(finish[level][i][0],finish[level][i][1]);
+        ptx.lineTo(finish[level][i][2],finish[level][i][3]);
+    }
+    ptx.stroke();
+    ptx.font = "30px Montserrat"
+    ptx.save();
+    ptx.transform(1, 0, 0, -1, 0, 0);
+    ptx.fillText("Times this session:", 210,-175);
+    ptx.font = "15px Cardo";
+    ptx.fillText("Currently playing on: " + finish[level][finish[level].length - 2], 210, -245);
+    let tempy3 = 0;
+    for(i = 0; i < cars.length; i++){
+        if(cars[i].times.length > (16/(lapLimit+1))+1){
+            cars[i].times.shift();
+        }
+        let tempy2 = 0;
+        for(o = 0; o < cars[i].times.length; o++){
+            ptx.font = "40px Montserrat"
+            console.log(cars[i].times[o][0]);
+            ptx.fillText(fillZeros(String(cars[i].times[o][0])) + " (" + lapLimit + " Laps)", 210,-135 + o*60 + tempy2 + tempy3);
+            let tempy = 0;
+            for(j = 1; j < cars[i].times[o].length; j++){
+                ptx.font = "15px Montserrat"
+                ptx.fillText(fillZeros(String(cars[i].times[o][j])), 212 + (j-1)*60 - tempy*(finish[level].length-2)*4,-115 + tempy + o*60 + tempy2 + tempy3);
+                if(j % (finish[level].length-2) == 0){
+                    tempy += 15;
+                }
+            }
+            tempy2 += (lapLimit-1)*15;
+        }
+        if(cars[i].times[0] !== undefined){
+            tempy3 += cars[i].times[0].length*15;
+        }
+    }
+    ptx.restore();
+}
+
+function fillZeros(trtr){
+    if(trtr.split(".")[1] !== undefined){
+        while(trtr.split(".")[1].length < 3){
+            trtr += "0";
+        }
+    }
+    else{
+        trtr += ".000";
+    }
+    return trtr;
+}
+
+function draw(){
+    ctx.clearRect(-gameCanvas.width/2,-gameCanvas.height/2,gameCanvas.width,gameCanvas.height);
+    for(var i = 0; i < cars.length; i++){
+        ctx.save();
+        ctx.translate(cars[i].x,cars[i].y);
+        ctx.rotate((cars[i].angle+90)/180*Math.PI);
+        if(cars[i].carId != 5){
+            if(cars[i].mov[0] == 1){
+                if(cars[i].acc > 1){
+                    ctx.drawImage(carImages[1][cars[i].carId][0],-cars[i].xs/2,-cars[i].ys/2);
+                }
+                else{
+                    ctx.drawImage(carImages[1][cars[i].carId][1],-cars[i].xs/2,-cars[i].ys/2);
+                }
+            }
+            else{
+                ctx.drawImage(carImages[0][cars[i].carId],-cars[i].xs/2,-cars[i].ys/2);
+            }
+        }
+        else{
+            ctx.lineWidth = 2;
+            ctx.strokeRect(-cars[i].xs/2,-cars[i].ys/2,cars[i].xs,cars[i].ys);
+        }
+        ctx.restore();
+        if(!multiplayer){
+            ctx.save();
+            ctx.transform(1, 0, 0, -1, 0, 0);
+            ctx.font = "30px Montserrat";
+            ctx.fillText(finish[level][cars[i].check][4], 210, -210);
+            ctx.font = "20px Montserrat";
+            ctx.fillText("Lap " + cars[i].lap + " out of " + lapLimit, 360, -320);
+            ctx.restore();
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = "black";
+            ctx.save();
+            ctx.translate(280, 325);
+            ctx.rotate(-cars[i].wheel * Math.PI * 1.8);
+            ctx.beginPath();
+            ctx.arc(0, 0, 50, 0, Math.PI * 2);
+            ctx.moveTo(-50, 0);
+            ctx.lineTo(50, 0);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -50);
+            ctx.stroke();
+            ctx.restore();
+
+            let tangle = cars[i].angle * Math.PI / 180 - viewAngle/2;
+            for(o = 0; o < rays; o++){
+                let end = false;
+                let da = tangle + (viewAngle/rays)*o;
+                for(p = 0; p < viewDistance; p++){
+                    obs.forEach(function (a){
+                        if(lineLine(cars[i].x, cars[i].y, Math.cos(da) * p + cars[i].x, Math.sin(da) * p + cars[i].y, a.x1, a.y1, a.x2, a.y2)){
+                            ctx.fillStyle = "red";
+                            ctx.fillRect(Math.cos(da) * p + cars[i].x, Math.sin(da) * p + cars[i].y, 5, 5);
+                            end = true;
+                            return;
+                        }
+                    });
+                    if(end){
+                        break;
+                    }
+                }
+            }
+            ctx.fillStyle = "black";
+        }
+        else{
+            ctx.font = "15px Montserrat";
+            ctx.save();
+            ctx.transform(1, 0, 0, -1, 0, 0);
+            ctx.fillText((i+1) + ") Lap " + cars[i].lap + " out of " + lapLimit + ", stage: " + finish[level][cars[i].check][4], 210, -360 + i*30);
+            ctx.restore();
+        }
+        if(driftDraw){
+            if(Math.abs(cars[i].slida-cars[i].angle) > 30){
+                for(x = 0; x < cars[i].ed.length; x++){
+                    if(multiplayer){
+                        dtx.fillStyle = cars[i].driftColor;
+                    }
+                    dtx.fillRect(cars[i].ed[x][0], cars[i].ed[x][1], (cars[i].slida-cars[i].angle)/50, (cars[i].slida-cars[i].angle)/50);
+                }
+            }
+        }
+    }
+}
+
+function awardCoupon(t){
+    let estr = " (You can apply it in the settings)";
+    switch(level){
+        case 0:
+        case 1:
+        case 2:
+            switch(lapLimit){
+                case 1:
+                    if(t < finish[level][finish[level].length - 1][0][3] && cookie[n][1].charAt(3)=="0"){
+                        let temp = Math.floor(Math.random()*2) == 0 ? "1" : "2";
+                        alert("Awarded coupon for passing " + finish[level][finish[level].length - 1][0][3] + " seconds: OY7" + temp + Math.round(t*1000) + estr);
+                        cookie[n][1] = cookie[n][1].replaceAt(3,"1");
+                    }
+                    if(t < finish[level][finish[level].length - 1][0][2] && cookie[n][1].charAt(2)=="0"){
+                        let temp = Math.floor(Math.random()*2) == 0 ? "3" : "4";
+                        alert("Awarded coupon for passing " + finish[level][finish[level].length - 1][0][2] + " seconds: SV7" + temp  + Math.round(t*1000) + estr);
+                        cookie[n][1] = cookie[n][1].replaceAt(2,"1");
+                    }
+                    if(t < finish[level][finish[level].length - 1][0][1] && cookie[n][1].charAt(1)=="0"){
+                        let temp = Math.floor(Math.random()*2) == 0 ? "5" : "6";
+                        alert("Awarded coupon for passing " + finish[level][finish[level].length - 1][0][1] + " seconds: KG7" + temp  + Math.round(t*1000) + estr);
+                        cookie[n][1] = cookie[n][1].replaceAt(1,"1");
+                    }
+                    if(t < finish[level][finish[level].length - 1][0][0] && cookie[n][1].charAt(0)=="0"){
+                        let temp = Math.floor(Math.random()*2) == 0 ? "8" : "9";
+                        alert("Awarded coupon for passing " + finish[level][finish[level].length - 1][0][0] + " seconds: TW7" + temp  + Math.round(t*1000) + estr);
+                        cookie[n][1] = cookie[n][1].replaceAt(0,"1");
+                    }
+                    for(var i=0;i<4;i++){
+                        if(cookie[n][1].charAt(i)==1){
+                            document.getElementById("cup"+(i+2)).disabled="";
+                        }
+                    }
+                break;
+                case 3:
+                    if(t < finish[level][finish[level].length - 1][1][2] && cookie[n][1].charAt(6)=="0"){
+                        let temp = Math.floor(Math.random()*2) == 0 ? "1" : "2";
+                        alert("Awarded coupon for passing " + finish[level][finish[level].length - 1][1][2] + " seconds: PQ3" + temp + Math.round(t*1000) + estr);
+                        cookie[n][1] = cookie[n][1].replaceAt(6,"1");
+                    }
+                    if(t < finish[level][finish[level].length - 1][1][1] && cookie[n][1].charAt(5)=="0"){
+                        let temp = Math.floor(Math.random()*2) == 0 ? "3" : "4";
+                        alert("Awarded coupon for passing " + finish[level][finish[level].length - 1][1][1] + " seconds: MM3" + temp  + Math.round(t*1000) + estr);
+                        cookie[n][1] = cookie[n][1].replaceAt(5,"1");
+                    }
+                    if(t < finish[level][finish[level].length - 1][1][0] && cookie[n][1].charAt(4)=="0"){
+                        let temp = Math.floor(Math.random()*2) == 0 ? "5" : "6";
+                        alert("Awarded coupon for passing " + finish[level][finish[level].length - 1][1][0] + " seconds: XW3" + temp  + Math.round(t*1000) + estr);
+                        cookie[n][1] = cookie[n][1].replaceAt(4,"1");
+                    }
+                    for(var i=0;i<3;i++){
+                        if(cookie[n][1].charAt(i+4)==1){
+                            document.getElementById("cc"+(i+1)).disabled="";
+                        }
+                    }
+                break;
+            }
+        break;
+    }
+}
+
+function coupon(i){
+    if(i.charAt(2) == "7"){
+        switch(i.charAt(3)){
+            case "1":
+            case "2":
+                cookie[n][1]=cookie[n][1].replaceAt(3,"1");
+                alert(i + " Applied!");
+            break;
+            case "3":
+            case "4":
+                cookie[n][1]=cookie[n][1].replaceAt(2,"1");
+                alert(i + " Applied!");
+            break;
+            case "5":
+            case "6":
+                cookie[n][1]=cookie[n][1].replaceAt(1,"1");
+                alert(i + " Applied!");
+            break;
+            case "8":
+            case "9":
+                cookie[n][1]=cookie[n][1].replaceAt(0,"1");
+                alert(i + " Applied!");
+            break;
+            default:
+            alert("Coupon Invalid!");
+        }
+        document.cookie="bitmap="+cookie[n][1]+";";
+        for(var i=0;i<4;i++){
+            if(cookie[n][1].charAt(i)==1){
+                document.getElementById("cup"+(i+2)).disabled="";
+            }
+        }
+    }
+    else if(i.charAt(2) == "3"){
+        switch(i.charAt(3)){
+            case "1":
+            case "2":
+                cookie[n][1] = cookie[n][1].replaceAt(6,"1");
+                alert(i + " Applied!");
+            break;
+            case "3":
+            case "4":
+                cookie[n][1] = cookie[n][1].replaceAt(5,"1");
+                alert(i + " Applied!");
+            break;
+            case "5":
+            case "6":
+                cookie[n][1] = cookie[n][1].replaceAt(4,"1");
+                alert(i + " Applied!");
+            break;
+            default:
+            alert("Coupon Invalid!");
+        }
+        document.cookie="bitmap="+cookie[n][1]+";";
+        for(var i=0;i<3;i++){
+            if(cookie[n][1].charAt(i+4)==1){
+                document.getElementById("cc"+(i+1)).disabled = "";
+            }
+        }
+    }
+    else if(i == "FFTY50GLD8"){
+        alert(i + " Applied!");
+        cookie[n][1] = cookie[n][1].replaceAt(7,"1");
+        document.cookie="bitmap="+cookie[n][1]+";";
+        document.getElementById("cc4").disabled = "";
+    }
+    else{
+        alert("Coupon Invalid!");
+    }
+    document.getElementById('claim').value = "";
+}
+
+function handleKeyDown(event){
+    for(i = 0; i < cars.length; i++){
+        if(event.keyCode == cars[i].keys[0]){
+            cars[i].mov[0] = 1;
+        }
+        if(event.keyCode == cars[i].keys[1] && cars[i].lap != 0){
+            cars[i].mov[1] = 1;
+        }
+        if(event.keyCode == cars[i].keys[2]){
+            cars[i].mov[2] = 1;
+        }
+        if(event.keyCode == cars[i].keys[3]){
+            cars[i].mov[3] = 1;
+        }
+        if(event.keyCode == cars[i].keys[4] && !multiplayer && !tourney){
+            resetCar(i);
+        }
+    }
+}
+
+function handleKeyUp(event){
+    for(i = 0; i < cars.length; i++){
+        if(event.keyCode == cars[i].keys[0]){
+            cars[i].mov[0] = 0;
+        }
+        if(event.keyCode == cars[i].keys[1]){
+            cars[i].mov[1] = 0;
+        }
+        if(event.keyCode == cars[i].keys[2]){
+            cars[i].mov[2] = 0;
+        }
+        if(event.keyCode == cars[i].keys[3]){
+            cars[i].mov[3] = 0;
+        }
+    }
+}
+
+function resetCar(i){
+    cars[i].respawn();
+    permDraw();
+}
+
+function clearD(){
+    document.getElementById("drift").style.opacity = "0";
+    setTimeout(function(){
+        document.getElementById("drift").style.opacity = "1";
+        dtx.clearRect(-gameCanvas.width/2,-gameCanvas.height/2,gameCanvas.width,gameCanvas.height);
+    },2000);
+}
+function openNotes(){
+    window.open("https://s2js.com/oplo/dev_notes");
+}
+function openSettings(){
+    document.getElementById("settingsContainer").style.display = "block";
+}
+
+function openGame(){
+    //clearInterval(time);
+    document.getElementById("gameContainer").style.display = "block";
+}
+
+function openTourney(){
+    document.getElementById("tourneyContainer").style.display = "block";
+    updateStatsT();
+}
+
+function updateStatsT(){
+    var e = document.getElementById("typeNT");
+    document.getElementById("statsT").innerHTML = "";
+    var f = document.getElementById("sposNT");
+    tourneySposType = f.options[f.selectedIndex].value - 1;
+    for(i = 0; i < tourneys[e.options[e.selectedIndex].value - 1].length - 3; i++){
+        document.getElementById("statsT").innerHTML += tourneys[e.options[e.selectedIndex].value - 1][i][1] + " Laps - " +
+            finish[tourneys[e.options[e.selectedIndex].value - 1][i][0] - 1][finish[tourneys[e.options[e.selectedIndex].value - 1][i][0] - 1].length - 2] +
+            " (Position: " + tourneySpos[tourneys[e.options[e.selectedIndex].value - 1][i][0] - 1][tourneySposType] + ")" + "<br>";
+    }
+    document.getElementById("statsT").innerHTML += "<br>Expected time: ~ " + tourneys[e.options[e.selectedIndex].value - 1][tourneys[e.options[e.selectedIndex].value - 1].length - 2] + "<br>";
+    document.getElementById("statsT").innerHTML += "<br>Record: " + tourneys[e.options[e.selectedIndex].value - 1][tourneys[e.options[e.selectedIndex].value - 1].length - 1] + "<br>";
+}
+
+function closeSettings(){
+    document.getElementById("settingsContainer").style.display = "none";
+    var e = document.getElementById("Splace");
+    cars[0].spawn = e.options[e.selectedIndex].value - 1;
+    cars[0].respawn();
+    permDraw();
+}
+
+function closeGame(){
+    document.getElementById("gameContainer").style.display = "none";
+}
+
+function closeTourney(){
+    document.getElementById("tourneyContainer").style.display = "none";
+}
+
+function closeTEC(){
+    document.getElementById("tourneyEndContainer").style.display = "none";
+}
+
+function startGame(levelT, lapLimitT, spawnPlace){
+    dtx.clearRect(-gameCanvas.width/2,-gameCanvas.height/2,gameCanvas.width,gameCanvas.height);
+    document.getElementById("gameContainer").style.display = "none";
+    lapLimit = lapLimitT;
+    level = levelT;
+    obs = [];
+    for(i = 0; i < tobs[level].length; i++){
+        obs.push(tobs[level][i]);
+    }
+    if(!multiplayer){
+        cars = [new car(0, 0, 90, [87, 83, 68, 65, 81], 0)];
+        let col = document.getElementById("ccB").options[document.getElementById("ccB").selectedIndex].value;
+        cars[0].carId = Number(col);
+        cars[0].spawn = spawnPlace - 1;
+        cars[0].respawn();
+        cars[0].times = [];
+        permDraw();
+    }
+    else{
+        cars = [new car(0, 0, 90, [87, 83, 68, 65, 81], 0, "rgba(214, 74, 0, 0.5)")];
+        if(playerCount > 1) cars.push(new car(0, 0, 90, [38, 40, 39, 37, 191], 1, "rgba(64, 174, 196, 0.5)"));
+        if(playerCount > 2) cars.push(new car(0, 0, 90, [79, 76, 186, 75, 73], 2, "rgba(0, 0, 0, 0.5)"));
+        if(playerCount > 3) cars.push(new car(0, 0, 90, [71, 66, 78, 86, 70], 3, "rgba(59, 124, 18, 0.5)"));
+        for(i = 0; i < playerCount; i++){
+            cars[i].carId = i;
+            cars[i].respawn();
+            cars[i].stopMovement = true;
+        }
+        initMultiPlayer();
+    }
+}
+
+function startTourney(){
+    closeTourney();
+    tourney = true;
+    tourneyLevel = 0;
+    tourneyTime = 0;
+    tourneyResults = [];
+    var e = document.getElementById("typeNT");
+    tourneyId = e.options[e.selectedIndex].value  - 1;
+    launchTourneyGame();
+}
+
+function launchTourneyGame(){
+    startGame(tourneys[tourneyId][tourneyLevel][0] - 1, tourneys[tourneyId][tourneyLevel][1], tourneySpos[tourneys[tourneyId][tourneyLevel][0] - 1][tourneySposType]);
+    cars[0].stopMovement = true;
+    show("3", 1);
+    setTimeout(function(){
+        show("2", 1);
+    }, 1500);
+    setTimeout(function(){
+        show("1", 1);
+    }, 3000);
+    setTimeout(function(){
+        cars[0].stopMovement = false;
+        show("GO!", 1);
+    }, 4500);
+}
+
+function continueTourney(){
+    if(tourneyLevel < tourneys[tourneyId].length - 4){
+        tourneyLevel++;
+        launchTourneyGame();
+    }
+    else{
+        document.getElementById("tourneyEndContainer").style.display = "block";
+        document.getElementById("resultName").innerHTML = tourneys[tourneyId][tourneys[tourneyId].length - 3] + " finished in " + fillZeros(String(Math.round(tourneyTime*1000)/1000)) + " (Spawns: " + sposKeys[tourneySposType] + ")";
+        document.getElementById("resultList").innerHTML = "";
+        for(i = 0; i < tourneys[tourneyId].length - 3; i++){
+            document.getElementById("resultList").innerHTML += finish[tourneys[tourneyId][i][0] - 1][finish[tourneys[tourneyId][i][0] - 1].length - 2] + " (" + tourneys[tourneyId][i][1] + " Laps) - " + fillZeros(String(tourneyResults[i])) + "<br>";
+        }
+        let diff = Math.round((fillZeros(String(Math.round(tourneyTime*1000)/1000)) - tourneys[tourneyId][tourneys[tourneyId].length - 1])*1000)/1000;
+        document.getElementById("resultList").innerHTML += diff >= 0 ? "<br>You were " + diff + " seconds slower than the record<br>" : "<br>Congratulations! You beat the record by " + Math.abs(diff) + " seconds!<br>";
+        tourney = false;
+        if(tourneys[tourneyId][tourneys[tourneyId].length - 3] == "Marathon 2"){
+            alert("Awarded coupon for completing the Marathon 2: FFTY50GLD8");
+            cookie[n][1] = cookie[n][1].replaceAt(7,"1");
+        }
+        startGame(3, 1, 1);
+    }
+}
+
+function initMultiPlayer(){
+    permDraw();
+    multiResults = [];
+    show("3", 1);
+    setTimeout(function(){
+        show("2", 1);
+    }, 1500);
+    setTimeout(function(){
+        show("1", 1);
+    }, 3000);
+    setTimeout(function(){
+        for(i = 0; i < playerCount; i++){
+            cars[i].stopMovement = false;
+        }
+        show("GO!", 1);
+    }, 4500);
+}
+
+function checkMulti(){
+    if(multiResults.length == playerCount){
+        show("Winner: Player No " + (multiResults[0][0]+1) + " with " + multiResults[0][1] + " seconds", 5);
+    }
+}
+
+function show(item, sec){
+    document.getElementById("showCard").transition = "all " + sec + "s";
+    document.getElementById("showCard").innerHTML = item;
+    document.getElementById("showCard").classList.add("sha");
+    setTimeout(function(){
+        document.getElementById("showCard").classList.remove("sha");
+        document.getElementById("showCard").transition = "all 0.1s";
+        document.getElementById("showCard").fontSize = "0px";
+    }, sec*1000 + 100);
+}
+
+function chandr(){
+    let col=document.getElementById("cupsB").options[document.getElementById("cupsB").selectedIndex].value;
+    switch(Number(Number(col))){
+        case 1:
+            driftDraw = true;
+            dtx.fillStyle="rgba(0, 0, 0, 0.5)";
+        break;
+        case 2:
+            driftDraw = true;
+            dtx.fillStyle="rgba(59, 124, 18, 0.5)";
+        break;
+        case 3:
+            driftDraw = true;
+            dtx.fillStyle="rgba(64, 174, 196, 0.5)";
+        break;
+        case 4:
+            driftDraw = true;
+            dtx.fillStyle="rgba(104, 38, 147, 0.5)";
+        break;
+        case 5:
+            driftDraw = true;
+            dtx.fillStyle="rgba(214, 74, 0, 0.5)";
+        break;
+        case 6:
+            driftDraw = false;
+        break;
+    }
+}
+
+function checkAchievements(){
+    let mapN = document.getElementById("mapN").options[document.getElementById("mapN").selectedIndex].value;
+    let lapN = document.getElementById("lapN").options[document.getElementById("lapN").selectedIndex].value;
+    if((lapN == 1 || lapN == 3 || lapN == 50) && mapN != 4 && mapN != 6 && !multiplayer){
+        document.getElementById("ach").innerHTML = "*Achievements are enabled for this mode";
+        document.getElementById("ach").style.color = "green";
+    }
+    else{
+        document.getElementById("ach").innerHTML = "*Achievements are disabled for this mode";
+        document.getElementById("ach").style.color = "red";
+    }
+}
+
+function openLeads(){
+    window.open("https://s2js.com/oplo/race_leaderboards");
+}
+
+function chancc(){
+    let col = document.getElementById("ccB").options[document.getElementById("ccB").selectedIndex].value;
+    cars[0].carId = Number(col);
+}
+
+function init(){
+    permDraw();
+    time=setInterval(update,10);
+}
+
+function collBool(){
+    if(multiCollisions){
+        document.getElementById("collB").innerHTML = "Disabled";
+        multiCollisions = false;
+    }
+    else{
+        document.getElementById("collB").innerHTML = "Enabled";
+        multiCollisions = true;
+    }
+}
+
+function multBool(){
+    if(multiplayer){
+        document.getElementById("multBool").innerHTML = "Disabled";
+        multiplayer = false;
+        document.getElementById("pl").style.display = "none";
+        document.getElementById("plN").style.display = "none";
+        document.getElementById("mode").style.display = "none";
+        document.getElementById("modeN").style.display = "none";
+        document.getElementById("coll").style.display = "none";
+        document.getElementById("collB").style.display = "none";
+    }
+    else{
+        document.getElementById("multBool").innerHTML = "Enabled";
+        multiplayer = true;
+        document.getElementById("pl").style.display = "inline";
+        document.getElementById("plN").style.display = "inline";
+        document.getElementById("mode").style.display = "inline";
+        document.getElementById("modeN").style.display = "inline";
+        document.getElementById("coll").style.display = "inline";
+        document.getElementById("collB").style.display = "inline";
+        playerCount = document.getElementById('plN').options[document.getElementById('plN').selectedIndex].value;
+    }
+    checkAchievements();
+}
+
+window.addEventListener("keydown", function(e) {
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
+}, false);
+
+window.addEventListener('load', init, false);
+
+window.addEventListener('keydown', handleKeyDown, true);
+window.addEventListener('keyup', handleKeyUp, true);
+</script>
+
+</body>
+</html>
