@@ -140,6 +140,10 @@
 </style>
 </head>
 <body>
+  <script src="/Net.js"></script>
+  <script src="/Weights.js" charset="utf-8"></script>
+  <script src="/Block.js" charset="utf-8"></script>
+  <script src="/Neiron.js" charset="utf-8"></script>
 <div class = "container">
     <canvas id="permanent" width=1600 height=1600></canvas>
     <canvas id="drift" width=1600 height=1600></canvas>
@@ -170,12 +174,12 @@
         </select><br><br>
         <button id="ccs" class = "left">Car Color:</button>
         <select id = "ccB" onchange="chancc();" class = "right">
-            <option id="cc0" value="0" selected>White</option>
+            <option id="cc0" value="0" >White</option>
             <option id="cc1" value="1" disabled>Blue</option>
             <option id="cc2" value="3" disabled>Green</option>
             <option id="cc3" value="2" disabled>Black</option>
             <option id="cc4" value="4" disabled>Gold</option>
-            <option id="cc5" value="5">Basic (faster)</option>
+            <option id="cc5" value="5" selected>Basic (faster)</option>
             <option id="cc6" value="6" disabled>Coming Soon!</option>
         </select><br><br>
         <button id="cups" class = "left">Car Drift Color:</button>
@@ -277,8 +281,8 @@
 var cookie=document.cookie.split(";");
 var n=-1;
 var time;
-var rays = 10;
-var viewAngle = 0.9;
+var rays = 8;
+var viewAngle = Math.PI*2;
 var viewDistance = 500;
 
 for(var i=0;i<cookie.length;i++){
@@ -322,6 +326,7 @@ String.prototype.replaceAt = function (index, replacement) {
 }
 
 var carImages = [[],[]];
+/*
 for(p = 0; p < 5; p++){
     carImages[0].push(new Image(10,20));
     carImages[0][p].src = "Car_" + p + ".png";
@@ -331,7 +336,7 @@ for(p = 0; p < 5; p++){
         carImages[1][p][g].src = "Car_" + p + "_drive_" + (g+1) + ".png";
     }
 }
-
+*/
 var stopMovement = false;
 var playerCount = 1;
 var multiResults = []; //winner
@@ -608,6 +613,15 @@ var cars = [
     new car(0, 0, 90, [87, 83, 68, 65, 81], 0, "")
 ];
 cars[0].respawn();
+var AI=new car(0,0,90,[],1,"");
+AI.inputs=[];
+AI.net=new Net(3);
+AI.net.addBlock(rays,0,AI.net.noSquish,AI.net.noSquish,"input",true);
+AI.net.addBlock(10,0,AI.net.sigmoid,AI.net.Isigmoid,"mid");
+AI.net.addBlock(4,0,AI.net.sigmoid,AI.net.Isigmoid,"out");
+AI.net.connect("input","mid");
+AI.net.connect("mid","out");
+AI.respawn();
 var obs = [];
 for(i = 0; i < tobs[level].length; i++){
     obs.push(tobs[level][i]);
@@ -939,6 +953,7 @@ function draw(){
         ctx.save();
         ctx.translate(cars[i].x,cars[i].y);
         ctx.rotate((cars[i].angle+90)/180*Math.PI);
+        /*
         if(cars[i].carId != 5){
             if(cars[i].mov[0] == 1){
                 if(cars[i].acc > 1){
@@ -952,10 +967,10 @@ function draw(){
                 ctx.drawImage(carImages[0][cars[i].carId],-cars[i].xs/2,-cars[i].ys/2);
             }
         }
-        else{
+        else{*/
             ctx.lineWidth = 2;
             ctx.strokeRect(-cars[i].xs/2,-cars[i].ys/2,cars[i].xs,cars[i].ys);
-        }
+        //}
         ctx.restore();
         if(!multiplayer){
             ctx.save();
