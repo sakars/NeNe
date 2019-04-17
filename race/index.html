@@ -281,8 +281,8 @@
 var cookie=document.cookie.split(";");
 var n=-1;
 var time;
-var rays = 8;
-var viewAngle = Math.PI*2;
+var rays = 7;
+var viewAngle = Math.PI;
 var viewDistance = 500;
 
 for(var i=0;i<cookie.length;i++){
@@ -413,8 +413,17 @@ var finish = [
     ],
     [
         [-400,120,-220,120, "Beigu Līkums"],
+        [-400,240,-220,240, "AI"],
+        [-220,240,-220,400, "AI"],
         [-10,240,-10,400, "Sākuma Grieziens"],
+        [-10,240,200,240, "AI"],
+        [-10,240,-10,120, "AI"],
+        [-220,120,-10,120, "AI"],
+        [-10,0,-10,120, "AI"],
         [-10,0,200,0, "Līkloči"],
+        [-10,0,-10,-200, "AI"],
+        [-220,0,-220,-200, "AI"],
+        [-220,0,-400,0, "AI"],
         "Iesācēju Trasīte",
         [0]
     ],
