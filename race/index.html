@@ -1003,24 +1003,8 @@ function draw(){
             ctx.stroke();
             ctx.restore();
 
-            let tangle = cars[i].angle * Math.PI / 180 - viewAngle/2;
-            for(o = 0; o < rays; o++){
-                let end = false;
-                let da = tangle + (viewAngle/rays)*o;
-                for(p = 0; p < viewDistance; p++){
-                    obs.forEach(function (a){
-                        if(lineLine(cars[i].x, cars[i].y, Math.cos(da) * p + cars[i].x, Math.sin(da) * p + cars[i].y, a.x1, a.y1, a.x2, a.y2)){
-                            ctx.fillStyle = "red";
-                            ctx.fillRect(Math.cos(da) * p + cars[i].x, Math.sin(da) * p + cars[i].y, 5, 5);
-                            end = true;
-                            return;
-                        }
-                    });
-                    if(end){
-                        break;
-                    }
-                }
-            }
+            let o = rayCast(cars[i]);
+
             ctx.fillStyle = "black";
         }
         else{
@@ -1041,6 +1025,32 @@ function draw(){
             }
         }
     }
+}
+
+function rayCast(car){
+    let rays = 10;
+    let viewAngle = 0.9;
+    let viewDistance = 700;
+    let out=[];
+    for(let o = 0; o < rays; o++){
+        let end = false;
+        let da = car.angle * Math.PI / 180 - viewAngle/2 + (viewAngle/rays)*o;
+        for(let p = 0; p < viewDistance; p++){
+            obs.forEach(function (a){
+                if(lineLine(car.x, car.y, Math.cos(da) * p + car.x, Math.sin(da) * p + car.y, a.x1, a.y1, a.x2, a.y2)){
+                    ctx.fillStyle = "red";
+                    ctx.fillRect(Math.cos(da) * p + car.x, Math.sin(da) * p + car.y, 5, 5);
+                    end = true;
+                    return;
+                }
+            });
+            if(end){
+                out.push(p);
+                break;
+            }
+        }
+    }
+    return out;
 }
 
 function awardCoupon(t){
